@@ -1,0 +1,55 @@
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore build artifacts
+build/
+*.o
+*.obj
+*.exe
+*.out
+
+# Ignore dependency directories
+node_modules/
+vendor/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore compiled dynamic libraries
+*.dll
+*.so
+*.dylib
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Ignore backup files
+*.bak
+*.old
+*.orig
+
+# Ignore compiled Python files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore CMake build files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore other IDE specific files
+.idea/
+*.iml
+*.ipr
+*.iws
