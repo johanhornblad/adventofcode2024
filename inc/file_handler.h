@@ -9,7 +9,7 @@ class FileHandler {
         FileHandler(const std::string& filePath);
 
         std::string readFile();
-        std::vector<std::string> readFileLines();
+        std::vector<std::string> readFileLines() const;
     private:
         std::string filePath;
 };

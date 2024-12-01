@@ -15,10 +15,11 @@ std::string FileHandler::readFile() {
     }
     std::stringstream buffer;
     buffer << file.rdbuf();
+    file.close();
     return buffer.str();
 }
 
-std::vector<std::string> FileHandler::readFileLines() {
+std::vector<std::string> FileHandler::readFileLines() const {
     std::ifstream file(filePath);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file");
@@ -28,5 +29,6 @@ std::vector<std::string> FileHandler::readFileLines() {
     while(std::getline(file, line)) {
         lines.push_back(line);
     }
+    file.close();
     return lines;
 }

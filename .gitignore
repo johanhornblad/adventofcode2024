@@ -43,10 +43,10 @@ Thumbs.db
 __pycache__/
 
 # Ignore CMake build files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
+#CMakeFiles/
+#CMakeCache.txt
+#cmake_install.cmake
+#Makefile
 
 # Ignore other IDE specific files
 .idea/
