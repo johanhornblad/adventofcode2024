@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 
 
 class TextFilter {
     public:
         std::vector<int> findNumbers(const std::string& text) const;
+        std::vector<std::string> getMatches(const std::string& text, std::regex pattern) const;
 
     private:
 

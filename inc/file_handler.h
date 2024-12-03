@@ -8,7 +8,7 @@ class FileHandler {
     public:
         FileHandler(const std::string& filePath);
 
-        std::string readFile();
+        std::string readFile() const;
         std::vector<std::string> readFileLines() const;
     private:
         std::string filePath;

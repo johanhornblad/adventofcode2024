@@ -27,51 +27,6 @@ void bubbleSort(std::vector<int>& numbers) {
 }
 
 
-void day2(const FileHandler& fileHandler) {
-  auto lines = fileHandler.readFileLines();
-  auto textFilter = TextFilter{};
-  auto isAscending = false;
-
-  auto sum = 0;
-
-  for(const auto& line : lines) {
-    auto numbers = textFilter.findNumbers(line);
-
-
-
-    for(std::size_t i = 0; i < numbers.size() - 1; i++) {
-        if(numbers[i] > numbers[i+1]) {
-            if(i > 0 && !isAscending){
-                break;
-            }
-            isAscending = true;
-        }
-        else if(numbers[i] < numbers[i+1]) {
-             if(i > 0 && isAscending){
-                break;
-            }
-            isAscending = false;
-        } 
-        else break;
-
-        auto difference = std::abs(numbers[i + 1] - numbers[i]);
-        if(difference >= 1 && difference < 4) {
-            if(i == numbers.size() - 2) {
-                sum ++;
-            }
-        }
-        else {
-            break;
-        }
-    }
-
-  }
-
-  std::cout << "sum: " << sum << std::endl;
-
-
-
-}
 
 bool isOkayToRemove(const std::vector<int>& numbers, int index, int maxIndex) {
    if(index == 0) return true;
@@ -80,30 +35,6 @@ bool isOkayToRemove(const std::vector<int>& numbers, int index, int maxIndex) {
 
     auto difference = std::abs(numbers[index - 1] - numbers[index + 1] );
     return difference >= 1 && difference < 4;
-}
-
-bool withinRange(int diff) {
-    auto absDiff = std::abs(diff);
-    return absDiff > 0 && absDiff < 4;
-}
-
-bool valueIsValid(int index, int value, int nextValue, int ascOrDesc) {
-   auto diff = nextValue - value;
-
-   if(index == 0) return withinRange(diff);
-   // asc
-   if(ascOrDesc = 1 && diff > 0) return withinRange(diff);
-   //desc
-   if(ascOrDesc = -1 && diff < 0) return withinRange(diff);
-   
-   return false;
-}
-
-int getAscOrDesc(int value, int nextValue) {
-    auto diff = nextValue - value;
-    if(diff > 0) return 1;
-    if(diff < 0) return -1;
-    return 0;
 }
 
 /*void day2b(const FileHandler& fileHandler) {
@@ -178,69 +109,83 @@ int getAscOrDesc(int value, int nextValue) {
 
 }*/
 
-
-void day2bb(const FileHandler& fileHandler) {
+/*void day2(const FileHandler& fileHandler) {
   auto lines = fileHandler.readFileLines();
   auto textFilter = TextFilter{};
-  auto ascOrDesc = 0;
+  auto isAscending = false;
 
   auto sum = 0;
-  auto isValid = false;
 
   for(const auto& line : lines) {
     auto numbers = textFilter.findNumbers(line);
-    auto removedLevels = 0;
-    auto removedIndex = -1;
-   
-
-    for(std::size_t i = 0; i < numbers.size(); i++) {
-        if(valueIsValid(i, numbers[i], numbers[i +1], ascOrDesc)) {
-            if(ascOrDesc == 0) {
-                ascOrDesc = getAscOrDesc(numbers[i], numbers[i +1]);
-            }
-        } else {
-             removedIndex = i;
-             break;
-        }
-    }   
-
-    if(removedIndex != -1) {
-    numbers.erase(numbers.begin() + removedIndex);
-    auto isAscending = false;
-    auto itPass = false;
-
-    for(std::size_t i = 0; i < numbers.size() - 1; i++) {
-        if(numbers[i] > numbers[i+1]) {
-            if(i > 0 && !isAscending){
-                break;
-            }
-            isAscending = true;
-        }
-        else if(numbers[i] < numbers[i+1]) {
-             if(i > 0 && isAscending){
-                break;
-            }
-            isAscending = false;
-        } 
-        else break;
-
-        auto difference = std::abs(numbers[i + 1] - numbers[i]);
-        if(difference >= 1 && difference < 4) {
-            if(i == numbers.size() - 2) {
-                itPass = true;
-            }
-        }
-        else {
-            break;
-        }
-    }
-    if(itPass) sum++;
-
-    } else sum++;
+    if(checkSetIsValid(numbers)) sum++;
 
   }
 
   std::cout << "sum: " << sum << std::endl;
+
+
+
+}*/
+
+
+bool withinRange(int diff) {
+    return (std::abs(diff) > 0) && (std::abs(diff) < 4);
+}
+
+bool valueIsValid(int index, int value, int nextValue, int ascOrDesc) {
+   auto diff = nextValue - value;
+
+   if(index == 0) return withinRange(diff);
+   if ((ascOrDesc == 1 && diff > 0) || (ascOrDesc == -1 && diff < 0)) return withinRange(diff);
+   return false;
+}
+
+int getAscOrDesc(int value, int nextValue) {
+    auto diff = nextValue - value;
+    if(diff > 0) return 1;
+    if(diff < 0) return -1;
+    return 0;
+}
+
+int checkLastStep(int index,  const std::vector<int>& numbers, int ascOrDesc) {
+    if(valueIsValid(index, numbers[index - 1], numbers[index + 1], ascOrDesc)){
+      return index;
+    } else {
+      return index + 1;
+    }
+}
+bool checkSetIsValid(std::vector<int> numbers) {
+    int ascOrDesc = 0;
+    for (std::size_t i = 0; i < numbers.size() - 1; i++) {
+        if (!valueIsValid(i, numbers[i], numbers[i + 1], ascOrDesc)) return false;
+        if (i == 0) ascOrDesc = getAscOrDesc(numbers[i], numbers[i + 1]);
+    }
+    return true;
+}
+
+bool canBeMadeValidByRemovingOne(const std::vector<int>& numbers) {
+    for (std::size_t i = 0; i < numbers.size(); i++) {
+        std::vector<int> modifiedNumbers = numbers;
+        modifiedNumbers.erase(modifiedNumbers.begin() + i);
+        if (checkSetIsValid(modifiedNumbers)) return true;
+    }
+    return false;
+}
+
+void day2bb(const FileHandler& fileHandler) {
+    auto lines = fileHandler.readFileLines();
+    auto textFilter = TextFilter{};
+    int sum = 0;
+
+    for (const auto& line : lines) {
+        auto numbers = textFilter.findNumbers(line);
+        if (checkSetIsValid(numbers) || canBeMadeValidByRemovingOne(numbers)) {
+            sum++;
+        }
+    }
+
+    std::cout << "sum: " << sum << std::endl;
 
 }
 
@@ -306,10 +251,26 @@ void day1b(const FileHandler& fileHandler) {
 
 }
 
+void day3(const FileHandler& fileHandler) {
+    auto text = fileHandler.readFile();
+    auto filter = TextFilter{};
+    std::regex pattern("mul\\(\\d+,\\d+\\)");
+    auto multipliers = filter.getMatches(text, pattern);
+    auto sum = 0;
+    for(auto mul : multipliers) {
+        auto numbers = filter.findNumbers(mul);
+        auto product = numbers.front() * numbers.back();
+        sum += product;
+    }
+
+    std::cout << "total sum: " << sum << std::endl;
+
+}
+
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day2.txt"};
-    day2bb(fileHandler);
+    auto fileHandler = FileHandler{"inputFiles/day3.txt"};
+    day3(fileHandler);
 
 
     return 0;

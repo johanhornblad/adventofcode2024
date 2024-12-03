@@ -17,3 +17,15 @@ std::vector<int> TextFilter::findNumbers(const std::string& text) const {
     return numbers;
 
 }
+
+std::vector<std::string> TextFilter::getMatches(const std::string& text, std::regex pattern) const {
+    std::vector<std::string> results{};
+
+    std::smatch matches;
+    auto searchStart = text.cbegin();
+    while(std::regex_search(searchStart, text.cend(), matches, pattern)) {
+        results.push_back(matches[0].str());
+        searchStart = matches.suffix().first;
+    }
+    return results;
+}

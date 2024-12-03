@@ -8,7 +8,7 @@ FileHandler::FileHandler(const std::string& filePath) : filePath(filePath) {
     
 }
 
-std::string FileHandler::readFile() {
+std::string FileHandler::readFile() const {
     std::ifstream file(filePath);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file");
