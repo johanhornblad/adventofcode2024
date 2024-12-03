@@ -82,65 +82,93 @@ bool isOkayToRemove(const std::vector<int>& numbers, int index, int maxIndex) {
     return difference >= 1 && difference < 4;
 }
 
-void day2b(const FileHandler& fileHandler) {
+bool withinRange(int diff) {
+    auto absDiff = std::abs(diff);
+    return absDiff > 0 && absDiff < 4;
+}
+
+bool valueIsValid(int index, int value, int nextValue, int ascOrDesc) {
+   auto diff = nextValue - value;
+
+   if(index == 0) return withinRange(diff);
+   // asc
+   if(ascOrDesc = 1 && diff > 0) return withinRange(diff);
+   //desc
+   if(ascOrDesc = -1 && diff < 0) return withinRange(diff);
+   
+   return false;
+}
+
+int getAscOrDesc(int value, int nextValue) {
+    auto diff = nextValue - value;
+    if(diff > 0) return 1;
+    if(diff < 0) return -1;
+    return 0;
+}
+
+/*void day2b(const FileHandler& fileHandler) {
   auto lines = fileHandler.readFileLines();
   auto textFilter = TextFilter{};
-  auto isAscending = false;
+  auto ascOrDesc = 0;
 
   auto sum = 0;
+  auto isValid = false;
 
   for(const auto& line : lines) {
     auto numbers = textFilter.findNumbers(line);
-
-
     auto removedLevels = 0;
-    for(std::size_t i = 0; i < numbers.size() - 1; i++) {
-        if(i == 0) removedLevels = 0;
-        if(numbers[i] > numbers[i+1]) {
-            if(i > 0 && !isAscending){
-                if(removedLevels == 0) {
-                   removedLevels ++;
-                } else {
-                   break;
-                }
-            }
-            isAscending = true;
-        }
-        else if(numbers[i] < numbers[i+1]) {
-             if(i > 0 && isAscending){
-                 if(removedLevels == 0) {
-                   removedLevels ++;
-                } else {
-                   break;
-                }
-            }
-            isAscending = false;
-        } 
-        else {
-            if(removedLevels == 0 && isOkayToRemove(numbers, i,numbers.size() - 2)) {
-               removedLevels ++;
-            } else {
-               break;
-            }
-        };
+    auto removedIndex = -1;
 
-        auto difference = std::abs(numbers[i + 1] - numbers[i]);
-        if(difference >= 1 && difference < 4) {
-            if(i == numbers.size() - 2) {
-                sum ++;
-            }
+    for(std::size_t i = 0; i < numbers.size(); i++) {
+        if(i == 0){
+             if(valueIsValid(i, numbers[i], numbers[i + 1], ascOrDesc)){
+                ascOrDesc = getAscOrDesc(numbers[i], numbers[i + 1]);
+                isValid == true;
+             }
+             else {
+                removedLevels++;
+                removedIndex = i;
+                isValid = false;
+             }
+             continue;
+         }
+
+        if(i == numbers.size() - 2) {
+
         }
-        else {
-            if(removedLevels == 0) {
-                removedLevels ++;
-                if(i == numbers.size() - 2) {
-                    sum ++;
-                }
+
+         if(isValid) {
+            
+            if(valueIsValid(i, numbers[i], numbers[i + 1], ascOrDesc)) {
+                isValid = true;
             } else {
-                  break;
-               }
-        }
-    }
+                
+                if(removedIndex == -1) {
+                      if(valueIsValid(i -1, numbers[i - 1], numbers[i + 1], ascOrDesc)) {
+                        isValid = true;
+                      } else{ 
+                        isValid = false;
+                        break;
+                      }
+                } else {
+                     isValid = false;
+                    break;
+                }
+            }
+         } else {
+            if(ascOrDesc == 0) ascOrDesc = getAscOrDesc(numbers[i], numbers[i + 1]);
+            if(removedIndex == -1) {
+                  if(valueIsValid(i -1, numbers[i - 1], numbers[i + 1], ascOrDesc)) {
+                    isValid = true;
+                  } else{ 
+                    isValid = false;
+                    break;
+                 }
+            } else {
+                 isValid = false;
+                 break;
+            }
+         }
 
   }
 
@@ -148,8 +176,73 @@ void day2b(const FileHandler& fileHandler) {
 
 
 
-}
+}*/
 
+
+void day2bb(const FileHandler& fileHandler) {
+  auto lines = fileHandler.readFileLines();
+  auto textFilter = TextFilter{};
+  auto ascOrDesc = 0;
+
+  auto sum = 0;
+  auto isValid = false;
+
+  for(const auto& line : lines) {
+    auto numbers = textFilter.findNumbers(line);
+    auto removedLevels = 0;
+    auto removedIndex = -1;
+   
+
+    for(std::size_t i = 0; i < numbers.size(); i++) {
+        if(valueIsValid(i, numbers[i], numbers[i +1], ascOrDesc)) {
+            if(ascOrDesc == 0) {
+                ascOrDesc = getAscOrDesc(numbers[i], numbers[i +1]);
+            }
+        } else {
+             removedIndex = i;
+             break;
+        }
+    }   
+
+    if(removedIndex != -1) {
+    numbers.erase(numbers.begin() + removedIndex);
+    auto isAscending = false;
+    auto itPass = false;
+
+    for(std::size_t i = 0; i < numbers.size() - 1; i++) {
+        if(numbers[i] > numbers[i+1]) {
+            if(i > 0 && !isAscending){
+                break;
+            }
+            isAscending = true;
+        }
+        else if(numbers[i] < numbers[i+1]) {
+             if(i > 0 && isAscending){
+                break;
+            }
+            isAscending = false;
+        } 
+        else break;
+
+        auto difference = std::abs(numbers[i + 1] - numbers[i]);
+        if(difference >= 1 && difference < 4) {
+            if(i == numbers.size() - 2) {
+                itPass = true;
+            }
+        }
+        else {
+            break;
+        }
+    }
+    if(itPass) sum++;
+
+    } else sum++;
+
+  }
+
+  std::cout << "sum: " << sum << std::endl;
+
+}
 
 void day1(const FileHandler& fileHandler) {
     auto textFilter = TextFilter{};
@@ -216,7 +309,7 @@ void day1b(const FileHandler& fileHandler) {
 int main() {
     
     auto fileHandler = FileHandler{"inputFiles/day2.txt"};
-    day2b(fileHandler);
+    day2bb(fileHandler);
 
 
     return 0;
