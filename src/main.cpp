@@ -1,5 +1,6 @@
 #include "file_handler.h"
 #include "text_filter.h"
+#include "triple.h"
 
 #include <iostream>
 #include <map>
@@ -263,6 +264,41 @@ void day3(const FileHandler& fileHandler) {
         sum += product;
     }
 
+    std::cout << "total sum: " << sum << std::endl;
+
+}
+
+int sumProductforDay3(std::vector<std::string> multipliers, const TextFilter filter) {
+     auto sum = 0;
+    for(auto mul : multipliers) {
+        auto numbers = filter.findNumbers(mul);
+        auto product = numbers.front() * numbers.back();
+        sum += product;
+    }
+    return sum;
+}
+
+
+void day3b(const FileHandler& fileHandler) {
+    auto text = fileHandler.readFile();
+    auto filter = TextFilter{};
+    std::regex patternMul("mul\\(\\d+,\\d+\\)");
+    std::regex patternDont("don't\\(\\)");
+    std::regex patternDo("do\\(\\)");
+    std::regex patternDontOrDo("don't\\(\\)|do\\(\\)");
+    auto sum = 0;
+    //get first pice of text
+    auto textUntilDontOrDo = filter.getTextUntil(text,patternDontOrDo);
+    auto multipliers = filter.getMatches(text, patternMul);
+    if(!multipliers.empty()) sumProductforDay3(multipliers, filter);
+    while(textUntilDontOrDo.second != "") {
+        if(textUntilDontOrDo.second == "do()"){
+            filter.getTextUntil(textUntilDontOrDo.second,patternDont)
+            
+        } else if (textUntilDontOrDo.second == "don't()") {
+
+        }
+    }
     std::cout << "total sum: " << sum << std::endl;
 
 }
