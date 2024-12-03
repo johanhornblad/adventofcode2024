@@ -287,26 +287,29 @@ void day3b(const FileHandler& fileHandler) {
     std::regex patternDo("do\\(\\)");
     std::regex patternDontOrDo("don't\\(\\)|do\\(\\)");
     auto sum = 0;
-    //get first pice of text
-    auto textUntilDontOrDo = filter.getTextUntil(text,patternDontOrDo);
-    auto multipliers = filter.getMatches(text, patternMul);
-    if(!multipliers.empty()) sumProductforDay3(multipliers, filter);
-    while(textUntilDontOrDo.second != "") {
-        if(textUntilDontOrDo.second == "do()"){
-            filter.getTextUntil(textUntilDontOrDo.second,patternDont)
-            
-        } else if (textUntilDontOrDo.second == "don't()") {
 
+    auto textUntilDontOrDo = filter.getTextUntil(text, patternDontOrDo);
+    auto multipliers = filter.getMatches(textUntilDontOrDo.first, patternMul);
+    if (!multipliers.empty()) sum += sumProductforDay3(multipliers, filter);
+    while (textUntilDontOrDo.second != "") {
+        if (textUntilDontOrDo.third == "do()") {
+            auto res = filter.getTextUntil(textUntilDontOrDo.second, patternDont);
+            auto muls = filter.getMatches(res.first, patternMul);
+            auto sumOFProduct = sumProductforDay3(muls, filter);
+            sum += sumOFProduct;
+            textUntilDontOrDo = res;
+        } else if (textUntilDontOrDo.third == "don't()") {
+            auto res = filter.getTextUntil(textUntilDontOrDo.second, patternDo);
+            textUntilDontOrDo = res;
         }
     }
     std::cout << "total sum: " << sum << std::endl;
-
 }
 
 int main() {
     
     auto fileHandler = FileHandler{"inputFiles/day3.txt"};
-    day3(fileHandler);
+    day3b(fileHandler);
 
 
     return 0;
