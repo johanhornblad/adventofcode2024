@@ -308,7 +308,7 @@ void day3b(const FileHandler& fileHandler) {
 
 
 void day4(const FileHandler& fileHandler) {
-    auto lines = fileHandler.readFileLines();
+   auto lines = fileHandler.readFileLines();
     auto filter = TextFilter{};
     std::regex patternXmas("XMAS");
     std::regex patternSamx("SAMX");
@@ -319,21 +319,27 @@ void day4(const FileHandler& fileHandler) {
     int xmasInDiagonals{0};
     int xmasInDiagonalsBackwards{0};
 
-    for(const auto& line : lines) xmasInLine += filter.getMatches(line,patternXmas).size();
+    // Count horizontal matches
+    for(const auto& line : lines) xmasInLine += filter.getMatches(line, patternXmas).size();
 
-   
+    // Count horizontal backwards matches
     for(const auto& line : lines) xmasInLineBackwards += filter.getMatches(line, patternSamx).size();
 
+    // Transpose matrix to count vertical matches
     auto transposedMatrix = filter.transposeColumnsToRows(lines);
     for(const auto& row : transposedMatrix) xmasInColumns += filter.getMatches(row, patternXmas).size();
-
+    // Count vertical backwards matches
     for(const auto& row : transposedMatrix) xmasInColumnsBackwards += filter.getMatches(row, patternSamx).size();
-
+     
+    // Get diagonals to count diagonal matches
     auto diagonals = filter.getDiagonals(lines);
     for(const auto& row : diagonals) xmasInDiagonals += filter.getMatches(row, patternXmas).size();
 
+    // Count diagonal backwards matches
     for(const auto& row : diagonals) xmasInDiagonalsBackwards += filter.getMatches(row, patternSamx).size();
-
+     std::cout << xmasInDiagonalsBackwards << std::endl;
+    
+    // Sum all matches
     auto sumOfXmas = xmasInLine + xmasInLineBackwards + xmasInColumns + xmasInColumnsBackwards + xmasInDiagonals + xmasInDiagonalsBackwards;
 
     std::cout << "total sum: " << sumOfXmas << std::endl;
