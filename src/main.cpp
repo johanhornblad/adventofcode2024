@@ -3,6 +3,7 @@
 #include "triple.h"
 
 #include <iostream>
+#include <unordered_set> 
 #include <map>
 
 
@@ -306,6 +307,111 @@ void day3b(const FileHandler& fileHandler) {
     std::cout << "total sum: " << sum << std::endl;
 }
 
+bool searchInMatrixRecursiveDiagonalRightUp (int i, int j, int indexOfValue, const std::string& searchString, const std::vector<std::string>& matrix ) {
+    if(i < 0) return false;
+    if(j > static_cast<int>(matrix[i].size() - 1)) return false;
+    if(matrix[i][j] == searchString[indexOfValue]) {
+        if(matrix[i][j] == searchString[searchString.size() - 1]) return true;
+
+        return searchInMatrixRecursiveDiagonalRightUp(i - 1, j + 1, indexOfValue + 1, searchString, matrix);
+    } else return false;
+}
+
+bool searchInMatrixRecursiveDiagonalRightDown (int i, int j, int indexOfValue, const std::string& searchString, const std::vector<std::string>& matrix ) {
+   if(i > static_cast<int>(matrix.size() - 1)) return false;
+    if(j > static_cast<int>(matrix[i].size() -1 )) return false;
+    if(matrix[i][j] == searchString[indexOfValue]) {
+        if(matrix[i][j] == searchString[searchString.size() - 1]) return true;
+
+        return searchInMatrixRecursiveDiagonalRightDown(i + 1, j + 1, indexOfValue + 1, searchString, matrix);
+    } else return false;
+}
+
+bool searchInMatrixRecursiveDiagonalLeftDown (int i, int j, int indexOfValue, const std::string& searchString, const std::vector<std::string>& matrix ) {
+    if(i > static_cast<int>(matrix.size() - 1)) return false;
+    if(j < 0) return false;
+    if(matrix[i][j] == searchString[indexOfValue]) {
+        if(matrix[i][j] == searchString[searchString.size() - 1]) return true;
+
+        return searchInMatrixRecursiveDiagonalLeftDown(i + 1, j - 1, indexOfValue + 1, searchString, matrix);
+    } else return false;
+}
+
+bool searchInMatrixRecursiveDiagonalLeftUp (int i, int j, int indexOfValue, const std::string& searchString, const std::vector<std::string>& matrix ) {
+    if(i < 0) return false;
+    if(j < 0) return false;
+    if(matrix[i][j] == searchString[indexOfValue]) {
+         if(matrix[i][j] == searchString[searchString.size() - 1]) return true;
+
+        return searchInMatrixRecursiveDiagonalLeftUp(i -1, j - 1, indexOfValue + 1, searchString, matrix);
+    } else return false;
+}
+
+int SearchInMatrix(const std::vector<std::string>& matrix) {
+    std::string textToBeFound = "XMAS";
+    auto startIndex = 0;
+    auto iMax = static_cast<int>(matrix.size());
+    auto sum = 0;
+    for(int i = 0; i < iMax; i++){
+        auto jMax = static_cast<int>(matrix[i].size());
+        for(int j = 0; j< jMax; j++) {
+            if(matrix[i][j] == textToBeFound[startIndex]) {
+                if(searchInMatrixRecursiveDiagonalRightUp(i, j, startIndex, textToBeFound, matrix)) sum++;
+                if(searchInMatrixRecursiveDiagonalRightDown(i, j, startIndex, textToBeFound, matrix)) sum++;
+                if(searchInMatrixRecursiveDiagonalLeftDown(i, j, startIndex, textToBeFound, matrix)) sum++;
+                if(searchInMatrixRecursiveDiagonalLeftUp(i, j, startIndex, textToBeFound, matrix)) sum++;
+            }
+        }
+    }
+
+    return sum;
+
+}
+
+int SearchInMatrix4b(const std::vector<std::string>& matrix) {
+    std::string textToBeFound = "MAS";
+    auto startIndex = 0;
+    auto iMax = static_cast<int>(matrix.size());
+    auto sum = 0;
+    for(int i = 0; i < iMax; i++){
+        auto jMax = static_cast<int>(matrix[i].size());
+        if(i == 0 || i == iMax - 1) continue;
+        for(int j = 0; j< jMax; j++) {
+            if(j > 0 && j < jMax -1) {
+                std::string firstMas = "";
+                std::string secondMas = "";
+                if(matrix[i][j] == 'A') {
+                    firstMas += matrix[i - 1][j + 1];
+                    firstMas += 'A';
+                    firstMas += matrix[i +1][j-1];
+
+                    secondMas += matrix[i - 1][j - 1];
+                    secondMas += 'A';
+                    secondMas += matrix[i + 1][j + 1];
+                    
+                    
+                    if(firstMas == "MAS" || firstMas == "SAM") {
+                        if(secondMas == "MAS" || secondMas == "SAM") {
+                            sum++;
+                             std::cout << "first mas: " << firstMas << std::endl;
+                            std::cout << "second mas: " << secondMas << std::endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return sum;
+
+}
+
+void day4b(const FileHandler& fileHandler) {
+    auto lines = fileHandler.readFileLines();
+    auto filter = TextFilter{};
+    auto sum = SearchInMatrix4b(lines);
+    std::cout << "total sum: " << sum << std::endl;
+}
 
 void day4(const FileHandler& fileHandler) {
    auto lines = fileHandler.readFileLines();
@@ -331,25 +437,98 @@ void day4(const FileHandler& fileHandler) {
     // Count vertical backwards matches
     for(const auto& row : transposedMatrix) xmasInColumnsBackwards += filter.getMatches(row, patternSamx).size();
      
+
+    auto sumOfDiagonalMatches = SearchInMatrix(lines);
+    std::cout << sumOfDiagonalMatches << std::endl;
     // Get diagonals to count diagonal matches
-    auto diagonals = filter.getDiagonals(lines);
+   /* auto diagonals = filter.getDiagonals(lines);
     for(const auto& row : diagonals) xmasInDiagonals += filter.getMatches(row, patternXmas).size();
 
     // Count diagonal backwards matches
     for(const auto& row : diagonals) xmasInDiagonalsBackwards += filter.getMatches(row, patternSamx).size();
-     std::cout << xmasInDiagonalsBackwards << std::endl;
+     std::cout << xmasInDiagonalsBackwards << std::endl;*/
     
     // Sum all matches
-    auto sumOfXmas = xmasInLine + xmasInLineBackwards + xmasInColumns + xmasInColumnsBackwards + xmasInDiagonals + xmasInDiagonalsBackwards;
+    auto sumOfXmas = xmasInLine + xmasInLineBackwards + xmasInColumns + xmasInColumnsBackwards + sumOfDiagonalMatches;
 
     std::cout << "total sum: " << sumOfXmas << std::endl;
     
 
 }
+
+std::vector<int> numbersBefore(const std::vector<std::vector<int>>& rules, int number) {
+   auto numbersBefore = std::vector<int>{};
+   for(const auto& rule : rules) {
+       if(rule.back() == number) {
+           numbersBefore.push_back(rule.front());
+       }
+   }
+   return numbersBefore;
+}
+
+bool ListHasNumbers(const std::vector<int>& numbers) {
+    std::vector<int> existingNumbers{};
+    std::
+    for(const auto& number: numbers) {
+        if()
+    }
+}
+
+
+std::vector<int> numbersAfter(const std::vector<std::vector<int>>& rules, int number) {
+    auto numbersBefore = std::vector<int>{};
+   for(const auto& rule : rules) {
+       if(rule.front() == number) {
+           numbersBefore.push_back(rule.back());
+       }
+   }
+   return numbersBefore;
+}
+void day5(const FileHandler& fileHandler) {
+    auto lines = fileHandler.readFileLines();
+    auto filter = TextFilter{};
+    auto rules = std::vector<std::vector<int>>{};
+    auto updates = std::vector<std::vector<int>>{};
+    auto regexBlankLine = std::regex("^\\s*$");
+    auto visited = std::vector<int>{};
+
+
+    auto isUpdates = false;
+    for(const auto& line: lines) {
+        if(!isUpdates) {
+            rules.push_back(filter.findNumbers(line));
+
+            if(std::regex_match(line, regexBlankLine)) {
+                isUpdates = true;
+                continue;
+            }
+        } else {
+            rules.push_back(filter.findNumbers(line));
+
+        }
+    }
+
+
+
+    for(const auto& update : updates) {
+        for(const auto& page : update) {
+            if (visited.empty()) {
+                visited.push_back(page);
+                continue;
+            }
+
+            auto numbersMustExist = numbersBefore(rules, page);
+            auto numbersCannotExist = numbersAfter(rules, page);
+
+
+        }
+    }
+
+}
 int main() {
     
     auto fileHandler = FileHandler{"inputFiles/day4.txt"};
-    day4(fileHandler);
+    day4b(fileHandler);
 
 
     return 0;
