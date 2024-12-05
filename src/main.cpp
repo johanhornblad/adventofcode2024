@@ -467,10 +467,11 @@ std::vector<int> numbersBefore(const std::vector<std::vector<int>>& rules, int n
 }
 
 bool ListHasNumbers(const std::vector<int>& numbers) {
-    std::vector<int> existingNumbers{};
-    std::
+    std::unordered_set<int> numbersToFind(numbers.begin(), numbers.end());
     for(const auto& number: numbers) {
-        if()
+        if(numbersToFind.find(number) != numbersToFind.end()) {
+
+        }
     }
 }
 
