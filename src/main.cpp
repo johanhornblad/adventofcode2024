@@ -457,22 +457,27 @@ void day4(const FileHandler& fileHandler) {
 }
 
 std::vector<int> numbersBefore(const std::vector<std::vector<int>>& rules, int number) {
-   auto numbersBefore = std::vector<int>{};
-   for(const auto& rule : rules) {
-       if(rule.back() == number) {
-           numbersBefore.push_back(rule.front());
-       }
-   }
-   return numbersBefore;
-}
+    auto numbersBefore = std::vector<int>{};
 
-bool ListHasNumbers(const std::vector<int>& numbers) {
-    std::unordered_set<int> numbersToFind(numbers.begin(), numbers.end());
-    for(const auto& number: numbers) {
-        if(numbersToFind.find(number) != numbersToFind.end()) {
-
+    for (const auto& rule : rules) {
+        if (rule.back() == number) {
+            numbersBefore.push_back(rule.front());
         }
     }
+    return numbersBefore;
+}
+
+bool ListHasNumbers(const std::vector<int>& numbersToSearchFor, const std::vector<int>& numbers) {
+    std::unordered_set<int> numbersToFind(numbersToSearchFor.begin(), numbersToSearchFor.end());
+    int foundCount = 0;
+
+    for(const auto& number: numbers) {
+        if(foundCount == numbersToFind.size()) return true;
+        if(numbersToFind.find(number) != numbersToFind.end()) {
+            foundCount++;
+        }
+    }
+    return foundCount == numbersToFind.size();
 }
 
 
@@ -497,39 +502,64 @@ void day5(const FileHandler& fileHandler) {
     auto isUpdates = false;
     for(const auto& line: lines) {
         if(!isUpdates) {
-            rules.push_back(filter.findNumbers(line));
 
             if(std::regex_match(line, regexBlankLine)) {
+                std::cout << "blank line"<< std::endl;
                 isUpdates = true;
                 continue;
             }
-        } else {
             rules.push_back(filter.findNumbers(line));
+        } else {
+            updates.push_back(filter.findNumbers(line));
 
         }
     }
 
 
 
+    auto sum = 0;
     for(const auto& update : updates) {
+        auto isValidUpdate = false;
         for(const auto& page : update) {
             if (visited.empty()) {
-                visited.push_back(page);
-                continue;
+            visited.push_back(page);
+            continue;
             }
-
             auto numbersMustExist = numbersBefore(rules, page);
             auto numbersCannotExist = numbersAfter(rules, page);
+            auto HasRequiredNumbers = ListHasNumbers(numbersMustExist, visited);
+            auto isNumbersCannotExists = ListHasNumbers(numbersCannotExist, visited);
 
-
+            if(HasRequiredNumbers && !isNumbersCannotExists) {
+            isValidUpdate = true;
+            visited.push_back(page);
+            } else {
+            isValidUpdate = false;
+            break;
+            }
         }
+        std::cout << "Visited: -------------------------------------------" << std::endl;
+        for (const auto& page : visited) {
+            std::cout << page << " ";
+        }
+        std::cout << std::endl;
+        if(isValidUpdate) {
+            auto middleIndex = update.size()/2;
+            std::cout << "moddle: " << middleIndex << std::endl;
+            auto middlePage = update[middleIndex];
+            sum+= middlePage;
+        }
+
+        visited.clear();
     }
+
+    std::cout << "total sum: " << sum << std::endl;
 
 }
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day4.txt"};
-    day4b(fileHandler);
+    auto fileHandler = FileHandler{"inputFiles/day5.txt"};
+    day5(fileHandler);
 
 
     return 0;
