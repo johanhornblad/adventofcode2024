@@ -456,12 +456,17 @@ void day4(const FileHandler& fileHandler) {
 
 }
 
-std::vector<int> numbersBefore(const std::vector<std::vector<int>>& rules, int number) {
+bool numberExist(int number, const std::vector<int>& numbers) {
+    auto numbersSet = std::unordered_set<int>(numbers.begin(), numbers.end());
+    return numbersSet.find(number) != numbersSet.end();
+}
+
+std::vector<int> numbersBefore(const std::vector<std::vector<int>>& rules, int number, const std::vector<int>& pages) {
     auto numbersBefore = std::vector<int>{};
 
     for (const auto& rule : rules) {
         if (rule.back() == number) {
-            numbersBefore.push_back(rule.front());
+            if(numberExist(rule.front(), pages)) numbersBefore.push_back(rule.front());
         }
     }
     return numbersBefore;
@@ -480,12 +485,23 @@ bool ListHasNumbers(const std::vector<int>& numbersToSearchFor, const std::vecto
     return foundCount == numbersToFind.size();
 }
 
+bool listDoesntHaveNumbers(const std::vector<int>& numbersToSearchFor, const std::vector<int>& numbers) {
+    std::unordered_set<int> numbersToFind(numbersToSearchFor.begin(), numbersToSearchFor.end());
+    int foundCount = 0;
 
-std::vector<int> numbersAfter(const std::vector<std::vector<int>>& rules, int number) {
+    for(const auto& number: numbers) {
+        if(numbersToFind.find(number) != numbersToFind.end()) {
+            foundCount++;
+        }
+    }
+    return foundCount == 0;
+}
+
+std::vector<int> numbersAfter(const std::vector<std::vector<int>>& rules, int number, const std::vector<int>& pages) {
     auto numbersBefore = std::vector<int>{};
    for(const auto& rule : rules) {
        if(rule.front() == number) {
-           numbersBefore.push_back(rule.back());
+        if(numberExist(rule.back(), pages)) numbersBefore.push_back(rule.back());
        }
    }
    return numbersBefore;
@@ -504,7 +520,6 @@ void day5(const FileHandler& fileHandler) {
         if(!isUpdates) {
 
             if(std::regex_match(line, regexBlankLine)) {
-                std::cout << "blank line"<< std::endl;
                 isUpdates = true;
                 continue;
             }
@@ -518,39 +533,37 @@ void day5(const FileHandler& fileHandler) {
 
 
     auto sum = 0;
+    int i = 0;
+    std::vector<int> indexOfFailedUpdates{};
     for(const auto& update : updates) {
         auto isValidUpdate = false;
         for(const auto& page : update) {
+                  std::cout << page << std::endl;
             if (visited.empty()) {
             visited.push_back(page);
             continue;
             }
-            auto numbersMustExist = numbersBefore(rules, page);
-            auto numbersCannotExist = numbersAfter(rules, page);
+            auto numbersMustExist = numbersBefore(rules, page,  update);
+            auto numbersCannotExist = numbersAfter(rules, page, update);
             auto HasRequiredNumbers = ListHasNumbers(numbersMustExist, visited);
-            auto isNumbersCannotExists = ListHasNumbers(numbersCannotExist, visited);
-
-            if(HasRequiredNumbers && !isNumbersCannotExists) {
-            isValidUpdate = true;
-            visited.push_back(page);
+            auto isNumbersCannotExists = numbersCannotExist.empty() ? true :  listDoesntHaveNumbers(numbersCannotExist, visited);
+            if(HasRequiredNumbers && isNumbersCannotExists) {
+                isValidUpdate = true;
+                visited.push_back(page);
             } else {
-            isValidUpdate = false;
-            break;
+                isValidUpdate = false;
+                break;
             }
         }
-        std::cout << "Visited: -------------------------------------------" << std::endl;
-        for (const auto& page : visited) {
-            std::cout << page << " ";
-        }
-        std::cout << std::endl;
         if(isValidUpdate) {
             auto middleIndex = update.size()/2;
-            std::cout << "moddle: " << middleIndex << std::endl;
             auto middlePage = update[middleIndex];
             sum+= middlePage;
+        } else {
+            indexOfFailedUpdates.push_back(i);
         }
-
         visited.clear();
+        i++;
     }
 
     std::cout << "total sum: " << sum << std::endl;
