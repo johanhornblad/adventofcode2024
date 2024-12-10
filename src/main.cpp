@@ -506,6 +506,46 @@ std::vector<int> numbersAfter(const std::vector<std::vector<int>>& rules, int nu
    }
    return numbersBefore;
 }
+
+std::vector<int> sortPages(const std::vector<std::vector<int>>& rules, const std::vector<int>& pages) {
+    std::cout << "Pages: ";
+    for (const auto& page : pages) {
+        std::cout << page << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "-------------------------------------" << std::endl;
+    auto SortedPages = std::vector<int>{};
+    auto pagesLeft = pages;
+   // int i = 0;
+    while (SortedPages.size() != pages.size()) {
+        for (std::size_t i = 0; i < pagesLeft.size(); ++i) {
+            auto page = pagesLeft[i];
+            auto numbersShouldExist = numbersBefore(rules, page, pages);
+            std::cout << "Numbers that should exist before page " << page << ": ";
+            for (const auto& num : numbersShouldExist) {
+                std::cout << num << " ";
+            }
+            std::cout << std::endl;
+            if (ListHasNumbers(numbersShouldExist, SortedPages)) {
+                SortedPages.push_back(page);
+                pagesLeft.erase(pagesLeft.begin() + i);
+                std::cout << "Page: " << page << std::endl;
+                break;
+            }
+        }
+        //if (i == 5) break;
+        //i++;
+    }
+
+    std::cout << "Sorted Pages: ";
+    for (const auto& page : SortedPages) {
+        std::cout << page << " ";
+    }
+    std::cout << std::endl;
+
+    return SortedPages;
+}
+
 void day5(const FileHandler& fileHandler) {
     auto lines = fileHandler.readFileLines();
     auto filter = TextFilter{};
@@ -538,7 +578,7 @@ void day5(const FileHandler& fileHandler) {
     for(const auto& update : updates) {
         auto isValidUpdate = false;
         for(const auto& page : update) {
-                  std::cout << page << std::endl;
+                 
             if (visited.empty()) {
             visited.push_back(page);
             continue;
@@ -565,8 +605,17 @@ void day5(const FileHandler& fileHandler) {
         visited.clear();
         i++;
     }
+    auto sum2 = 0;
+    for(const auto& index : indexOfFailedUpdates) {
+        auto noValidUpdates = updates[index];
+        auto update = sortPages(rules, noValidUpdates);
 
-    std::cout << "total sum: " << sum << std::endl;
+        auto middle = update.size()/2;
+        auto middlePage = update[middle];
+        sum2+= middlePage;
+    }
+
+    std::cout << "total sum: " << sum2 << std::endl;
 
 }
 int main() {
