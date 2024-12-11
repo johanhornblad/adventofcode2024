@@ -5,7 +5,9 @@
     posX(posX),
     posY(posY),
     maze(maze),
-    heading(heading){};
+    heading(heading){
+        markPosAsVisited();
+    };
 
 std::pair<int, int> MazeWalker::getPosition() const {
     return std::pair{posX, posY};

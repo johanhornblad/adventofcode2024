@@ -666,16 +666,15 @@ void day6(const FileHandler& fileHandler) {
 
     auto maze = Maze{matrix};
     auto mazeWalker = MazeWalker(matrix, heading, startX, startY);
-    auto visited = std::vector<std::pair<int, int>>{};
     auto currentX = startX;
     auto currentY = startY;
-    while (!maze.isWithinMaze(currentX, currentY))
+    while (maze.isWithinMaze(currentX, currentY))
     {
        auto nextPos = mazeWalker.getNextPosition();
-       if(maze.isObstacle(nextPos.first, nextPos.second)) {
-          mazeWalker.turnRight();
-       } else if (!maze.isWithinMaze(nextPos.first, nextPos.second)) {
+       if(!maze.isWithinMaze(nextPos.first, nextPos.second)) {
             break;
+       } else if (maze.isObstacle(nextPos.first, nextPos.second)) {
+          mazeWalker.turnRight();
        } else {
           mazeWalker.walk();
           auto currentPos = mazeWalker.getPosition();
@@ -689,10 +688,12 @@ void day6(const FileHandler& fileHandler) {
    auto visitedCount = 0;
     for (const auto& row : visitedMap) {
         for (const auto& cell : row) {
+           // std::cout << "cell: "<< cell << " ";
             if (cell == 'X') {
                 visitedCount++;
             }
         }
+   
     }
    std::cout << "tota sum: " << visitedCount << std::endl;
     
@@ -701,7 +702,7 @@ void day6(const FileHandler& fileHandler) {
 
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day5.txt"};
+    auto fileHandler = FileHandler{"inputFiles/day6.txt"};
     day6(fileHandler);
 
 
