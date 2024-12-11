@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Iinc
 
 # Source files
-SRCS = src/main.cpp src/file_handler.cpp src/text_filter.cpp
+SRCS = src/main.cpp src/file_handler.cpp src/text_filter.cpp src/maze.cpp src/maze_walker.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
