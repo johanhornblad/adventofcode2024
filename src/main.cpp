@@ -699,6 +699,78 @@ void day6(const FileHandler& fileHandler) {
     
 }
 
+void walkTheMaze(const Maze& maze, MazeWalker& mazeWalker) {
+    std::pair<int, int> pos = mazeWalker.getPosition();
+    auto currentX = pos.first;
+    auto currentY = pos.second;
+    while (maze.isWithinMaze(currentX, currentY))
+    {
+       auto nextPos = mazeWalker.getNextPosition();
+       if(!maze.isWithinMaze(nextPos.first, nextPos.second)) {
+            break;
+       } else if (maze.isObstacle(nextPos.first, nextPos.second)) {
+          mazeWalker.turnRight();
+       } else {
+          mazeWalker.walk();
+          auto currentPos = mazeWalker.getPosition();
+          currentX = currentPos.first;
+          currentY = currentPos.second;
+       }
+    }
+
+}
+
+void day6b(const FileHandler& fileHandler) {
+     auto matrix = fileHandler.readFileLines();
+    auto isStart = false;
+    auto startX = 0;
+    auto startY = 0;
+
+    Direction heading;
+
+    for(std::size_t x = 0; x < matrix.size(); x++) {
+        for(std::size_t y = 0; y < matrix[0].size(); y++) {
+            if(matrix[x][y] == 'v') {
+                startX = x;
+                startY = y;
+                heading = Direction::SOUTH;
+                isStart = true;
+                break;
+            } else if(matrix[x][y] == '^') {
+                startX = x;
+                startY = y;
+                heading = Direction::NORTH;
+                isStart = true;
+                break;
+
+            } else if(matrix[x][y] == '>') {
+                startX = x;
+                startY = y;
+                heading = Direction::EAST;
+                isStart = true;
+                break;
+                
+            } else if(matrix[x][y] == '<') {
+                startX = x;
+                startY = y;
+                heading = Direction::WEST;
+                isStart = true;
+                break;
+            }
+        }
+        if(isStart) break;
+    }
+    
+
+    auto maze = Maze{matrix};
+    auto mazeWalker = MazeWalker(matrix, heading, startX, startY);
+    walkTheMaze(maze, mazeWalker);
+    auto visited = mazeWalker.getVisitedMaze();
+    
+
+
+}
+
 
 int main() {
     

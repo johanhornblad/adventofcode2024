@@ -22,12 +22,20 @@ class MazeWalker{
        //         X , Y
        std::pair<int, int> getNextPosition() const;
        const std::vector<std::string>& getVisitedMaze() const;
+       bool isLoop() const;
+       bool checkForLoop();
+       void resetMazeWalker(int startX, int starY, const std::vector<std::string>& maze, Direction heading);
 
     private:
        int posX;
        int posY;
        std::vector<std::string> maze;
+       std::vector<std::string> mazeForLoops;
        Direction heading; 
+       int loopStartX;
+       int LoopstartY;
+       int loopCount = 0;
+
 
        void walkWest();
        void walkNorth();
