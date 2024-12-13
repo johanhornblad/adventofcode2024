@@ -766,7 +766,7 @@ void day6b(const FileHandler& fileHandler) {
     auto mazeWalker = MazeWalker(matrix, heading, startX, startY);
     walkTheMaze(maze, mazeWalker);
     auto visited = mazeWalker.getVisitedMaze();
-    
+
 
 
 }
@@ -774,8 +774,8 @@ void day6b(const FileHandler& fileHandler) {
 
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day6.txt"};
-    day6(fileHandler);
+    auto fileHandler = FileHandler{"inputFiles/day1.txt"};
+    day1(fileHandler);
 
 
     return 0;

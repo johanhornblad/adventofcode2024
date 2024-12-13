@@ -2,7 +2,7 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -std=c++20 -Wall -Iinc
+CXXFLAGS = -std=c++20 -Wall -g -Iinc
 
 # Source files
 SRCS = src/main.cpp src/file_handler.cpp src/text_filter.cpp src/maze.cpp src/maze_walker.cpp
