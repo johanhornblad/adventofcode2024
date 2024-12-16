@@ -25,6 +25,7 @@ class MazeWalker{
        bool isLoop() const;
        bool checkForLoop();
        void resetMazeWalker(int startX, int starY, const std::vector<std::string>& maze, Direction heading);
+       bool getHasLoop() const;
 
     private:
        int posX;
@@ -35,6 +36,7 @@ class MazeWalker{
        int loopStartX;
        int LoopstartY;
        int loopCount = 0;
+       bool hasLoop = false;
 
 
        void walkWest();

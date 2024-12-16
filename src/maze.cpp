@@ -31,3 +31,12 @@ bool Maze::isWithinMaze(int posX, int posY) const {
 std::vector<std::string> Maze::getMaze() const {
     return maze;
 };
+
+void Maze::placeAnObstacle(int posX, int posY) {
+    maze[posX][posY] = '#';
+}
+
+void Maze::removeAnObstacle(int posX, int posY) {
+    maze[posX][posY] = '.';
+}
+

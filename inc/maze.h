@@ -11,6 +11,8 @@ class Maze {
         std::vector<std::string> getMaze() const;
         bool isEdge(int posX, int posY) const;
         bool isWithinMaze(int posX, int posY) const;
+        void placeAnObstacle(int posX, int posY);
+        void removeAnObstacle(int posX, int posY);
 
     private:
         std::vector<std::string> maze;

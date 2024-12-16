@@ -12,12 +12,19 @@
 
 
 bool MazeWalker::checkForLoop() {
-    if(loopCount > 1 && posX == loopStartX && posY == LoopstartY) {
+    // > 2 to be completely sure its a loop
+    // this function doesn't work so good but the aögotirhtm works any way
+    if(loopCount > 2 && posX == loopStartX && posY == LoopstartY) {
+        hasLoop = true;
         return true;
     }
-
+    loopCount == 0;
     return false;
 
+}
+
+bool MazeWalker::getHasLoop() const {
+    return hasLoop;
 }
 
 
@@ -30,6 +37,7 @@ void MazeWalker::resetMazeWalker(int startX, int startY,const std::vector<std::s
     LoopstartY = -1;
     this->heading = heading;
     loopCount = 0;
+    hasLoop = false;
 }
 
 bool MazeWalker::isLoop() const {
@@ -143,7 +151,7 @@ void MazeWalker::walkNorth() {
 void MazeWalker::markPosAsVisited() {
     maze[posX][posY] = 'X';
     auto& mazeForLoopsPosition = mazeForLoops[posX][posY];
-    if(mazeForLoopsPosition == '.') {
+    if(mazeForLoopsPosition == '.' || mazeForLoopsPosition == '^') {
         mazeForLoopsPosition = '1';
         loopCount = 0;
     } else if(std::isdigit(mazeForLoopsPosition)) {

@@ -699,7 +699,24 @@ void day6(const FileHandler& fileHandler) {
     
 }
 
-void walkTheMaze(const Maze& maze, MazeWalker& mazeWalker) {
+// create a function that takes a visited map
+// finds the position with X and sores the coridnates in a pair and stores the pair in a vector and then returns the vector
+
+std::vector<std::pair<int, int>> findX(const std::vector<std::string>& visitedMap) {
+    auto xPositions = std::vector<std::pair<int, int>>{};
+    for (std::size_t i = 0; i < visitedMap.size(); i++) {
+        for (std::size_t j = 0; j < visitedMap[0].size(); j++) {
+            if (visitedMap[i][j] == 'X') {
+                xPositions.push_back(std::pair{i, j});
+            }
+        }
+    }
+    return xPositions;
+}
+
+
+
+void walkTheMaze(const Maze& maze, MazeWalker& mazeWalker, bool checkForLoops) {
     std::pair<int, int> pos = mazeWalker.getPosition();
     auto currentX = pos.first;
     auto currentY = pos.second;
@@ -708,9 +725,14 @@ void walkTheMaze(const Maze& maze, MazeWalker& mazeWalker) {
        auto nextPos = mazeWalker.getNextPosition();
        if(!maze.isWithinMaze(nextPos.first, nextPos.second)) {
             break;
-       } else if (maze.isObstacle(nextPos.first, nextPos.second)) {
+       }
+        else if (maze.isObstacle(nextPos.first, nextPos.second)) {
           mazeWalker.turnRight();
        } else {
+        if(checkForLoops) {
+          if (mazeWalker.checkForLoop()) break;
+        }
+
           mazeWalker.walk();
           auto currentPos = mazeWalker.getPosition();
           currentX = currentPos.first;
@@ -764,18 +786,34 @@ void day6b(const FileHandler& fileHandler) {
 
     auto maze = Maze{matrix};
     auto mazeWalker = MazeWalker(matrix, heading, startX, startY);
-    walkTheMaze(maze, mazeWalker);
+    walkTheMaze(maze, mazeWalker, false);
     auto visited = mazeWalker.getVisitedMaze();
 
+    auto xPositions = findX(visited);
+    int sumOfLoops = 0;
+    // loop thorugh rhe xPositions and leave the rest blank
+    for (const auto& pos : xPositions) {
+        int posX = pos.first;
+        int posY = pos.second;
+        if(posX == startX && posY == startY) continue;
+        maze.placeAnObstacle(posX, posY);
+        mazeWalker.resetMazeWalker(startX, startY, maze.getMaze(), heading);
+        walkTheMaze(maze, mazeWalker, true);
+        if(mazeWalker.getHasLoop()) {
+            sumOfLoops++;
+        }
+        maze.removeAnObstacle(posX, posY);
+      
+    }
 
-
+    std::cout << "total sum " << sumOfLoops << std::endl;
 }
 
 
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day1.txt"};
-    day1(fileHandler);
+    auto fileHandler = FileHandler{"inputFiles/day6.txt"};
+    day6b(fileHandler);
 
 
     return 0;
