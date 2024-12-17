@@ -3,7 +3,8 @@
 #include "triple.h"
 #include "maze.h"
 #include "maze_walker.h"
-
+#include "algorithms.h"
+#include <functional>
 
 #include <iostream>
 #include <unordered_set> 
@@ -809,11 +810,36 @@ void day6b(const FileHandler& fileHandler) {
     std::cout << "total sum " << sumOfLoops << std::endl;
 }
 
+void day7(const FileHandler& fileHandler) {
+    auto algorithms = Algorithms{};
+
+    auto lines = fileHandler.readFileLines();
+    auto filter = TextFilter{};
+    auto operations = std::vector<std::function<long(long, long)>> {[](long a, long b){return a + b;}, [](long a, long b){return a * b;}};
+    auto totalSum = 0;
+    for (const auto& line : lines) {
+        auto colonPattern = std::regex{":"};
+        auto textBatches = filter.getTextUntil(line, colonPattern);
+        auto firstText = textBatches.first;
+        auto seconText = textBatches.second;
+
+        auto sums = filter.findLongNumbers(firstText);
+        long result = 0;
+        if(!sums.empty()) result= sums[0];
+        auto numbers = filter.findLongNumbers(seconText);
+
+
+        auto hasAnswer = algorithms.dynamicProgramingEquation<long>(result,numbers, operations);
+        if (hasAnswer) totalSum+=result;
+    }
+
+    std::cout << "total sum " << totalSum << std::endl;
+}
 
 int main() {
     
-    auto fileHandler = FileHandler{"inputFiles/day6.txt"};
-    day6b(fileHandler);
+    auto fileHandler = FileHandler{"inputFiles/day7.txt"};
+    day7(fileHandler);
 
 
     return 0;

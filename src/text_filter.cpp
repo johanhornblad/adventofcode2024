@@ -17,6 +17,20 @@ std::vector<int> TextFilter::findNumbers(const std::string& text) const {
 
 }
 
+std::vector<long> TextFilter::findLongNumbers(const std::string& text) const {
+    std::regex numberRegex("(\\d+)");
+    std::smatch matches;
+    auto numbers = std::vector<long>{};
+    auto searchStart = text.cbegin();
+
+    while(std::regex_search(searchStart, text.cend(), matches, numberRegex)) {
+        numbers.push_back(std::stol(matches[0].str()));
+        searchStart = matches.suffix().first;
+    }
+    return numbers;
+
+}
+
 std::vector<std::string> TextFilter::getMatches(const std::string& text, std::regex pattern) const {
     std::vector<std::string> results{};
 
