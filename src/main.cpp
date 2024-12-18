@@ -816,7 +816,7 @@ void day7(const FileHandler& fileHandler) {
     auto lines = fileHandler.readFileLines();
     auto filter = TextFilter{};
     auto operations = std::vector<std::function<long(long, long)>> {[](long a, long b){return a + b;}, [](long a, long b){return a * b;}};
-    auto totalSum = 0;
+    long totalSum = 0;
     for (const auto& line : lines) {
         auto colonPattern = std::regex{":"};
         auto textBatches = filter.getTextUntil(line, colonPattern);
@@ -832,7 +832,6 @@ void day7(const FileHandler& fileHandler) {
         auto hasAnswer = algorithms.dynamicProgramingEquation<long>(result,numbers, operations);
         if (hasAnswer) totalSum+=result;
     }
-
     std::cout << "total sum " << totalSum << std::endl;
 }
 
